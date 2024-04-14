@@ -49,10 +49,14 @@ func getTasks(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write(resp)
+	_, writeErr := w.Write(resp)
+	if writeErr != nil {
+		fmt.Println(err.Error())
+		return
+	}
 }
 
-func postTask(w http.ResponseWriter, r *http.Request) {
+func createTask(w http.ResponseWriter, r *http.Request) {
 	var task Task
 	var buf bytes.Buffer
 
@@ -78,7 +82,7 @@ func getTask(w http.ResponseWriter, r *http.Request) {
 
 	task, ok := tasks[id]
 	if !ok {
-		http.Error(w, "Задача не найдена", http.StatusNoContent)
+		http.Error(w, "Задача не найдена", http.StatusBadRequest)
 		return
 	}
 
@@ -90,7 +94,11 @@ func getTask(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write(resp)
+	_, writeErr := w.Write(resp)
+	if writeErr != nil {
+		fmt.Println(err.Error())
+		return
+	}
 }
 
 func deleteTask(w http.ResponseWriter, r *http.Request) {
@@ -98,7 +106,7 @@ func deleteTask(w http.ResponseWriter, r *http.Request) {
 
 	_, ok := tasks[id]
 	if !ok {
-		http.Error(w, "Задача не найдена", http.StatusNotFound)
+		http.Error(w, "Задача не найдена", http.StatusBadRequest)
 		return
 	}
 
@@ -112,7 +120,7 @@ func main() {
 	r := chi.NewRouter()
 
 	r.Get("/tasks", getTasks)
-	r.Post("/tasks", postTask)
+	r.Post("/tasks", createTask)
 	r.Get("/task/{id}", getTask)
 	r.Delete("/task/{id}", deleteTask)
 
