@@ -49,8 +49,7 @@ func getTasks(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	_, writeErr := w.Write(resp)
-	if writeErr != nil {
+	if _, err := w.Write(resp); err != nil {
 		fmt.Println(err.Error())
 		return
 	}
@@ -68,6 +67,11 @@ func createTask(w http.ResponseWriter, r *http.Request) {
 
 	if err = json.Unmarshal(buf.Bytes(), &task); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if _, ok := tasks[task.ID]; ok {
+		http.Error(w, "Задача с таким ID уже существует", http.StatusBadRequest)
 		return
 	}
 
@@ -94,8 +98,7 @@ func getTask(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	_, writeErr := w.Write(resp)
-	if writeErr != nil {
+	if _, err := w.Write(resp); err != nil {
 		fmt.Println(err.Error())
 		return
 	}
