@@ -70,7 +70,7 @@ func createTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if _, ok := tasks[task.ID]; ok {
+	if _, exist := tasks[task.ID]; exist {
 		http.Error(w, "Задача с таким ID уже существует", http.StatusBadRequest)
 		return
 	}
